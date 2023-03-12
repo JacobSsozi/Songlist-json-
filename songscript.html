@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JSON 2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script
+        src="https://code.jquery.com/jquery-3.6.3.js"
+        integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
+        crossorigin="anonymous">
+    </script>
+    <script>
+        $.getJSON('songs.json',
+            (data) => $('#songs-2').text(JSON.stringify(data))
+        );
+        const addPart3Song = (song) => {
+            const $row = $('<tr>')
+                .append( $('<td>').text(song.title) )
+                .append( $('<td>').text(song.artists.join(', ')))
+                .append( $('<td>').text(song.genres.join(', ')))
+                .append( $('<td>').text(song.year));
+            $('#songs-3 table').append($row);
+        };
+        $.getJSON('songs.json',
+            (songs) => {
+                songs.forEach(song => addPart3Song(song));
+            }
+        );
+        const addPart4Song = (song) => {
+            const $row = $('<tr>')
+                .append( $('<td>').text(song.title) )
+                .append( $('<td>').text(song.artists.join(', ')))
+                .append( $('<td>').text(song.genres.join(', ')))
+                .append( $('<td>').text(song.year));
+            $('#songs-4 table').append($row);
+        };
+        const populateGenres = (songs) => {
+            const genres = {};
+            const $select = $('#genre-selector');
+            songs.forEach(song => song.genres.forEach(g => genres[g] = true));
+            Object.keys(genres).forEach(
+                genre => {
+                    $select.append( $('<option>').attr('val', genre).text(genre) )
+                }
+            );
+        };
+        $.getJSON('songs.json',
+            (songs) => {
+                populateGenres(songs);
+                const $submit = $('#submit');
+                const $select = $('#genre-selector');
+                $submit.click(
+                    () => {
+                        if ($select.val() !== 'none') {
+                            $submit.attr('disabled', true);
+                            songs.filter(
+                                song => song.genres.includes($select.val())
+                            ).forEach(song => addPart4Song(song));
+                            $('#songs-4').removeClass('hidden');
+                        }
+                    }
+                );
+            }
+        );
+    </script>
+    <style>
+        .json-content, form {
+            margin-left: auto;
+            margin-right: auto;
+            width: 50%;
+        }
+        .hidden {
+            display: none;
+        }
+        body {
+        	padding-bottom: 150px;
+        }
+        h2 {
+            text-align: center;
+        }
+        table {
+            width: 100%
+        }
+        th {
+            width: 25%
+        }
+    </style>
+</head>
+<body>
+    <h2>Part 2: Raw songs</h2>
+    <div class="json-content" id="songs-2"></div>
+    <h2>Part 3: Formatted songs</h2>
+    <div class="json-content" id="songs-3">
+        <table>
+            <tr><th>Name</th><th>Artist(s)</th><th>Genre(s)</th><th>Year</th></tr>
+        </table>
+    </div>
+    <h2>Part 4: Filtered songs</h2>
+    <form>
+        <select id="genre-selector">
+            <option value="none">Choose a genre</option>
+        </select>
+        <button id="submit">Submit</button>
+    </form>
+    <div class="json-content hidden" id="songs-4">
+        <table>
+            <tr><th>Name</th><th>Artist(s)</th><th>Genre(s)</th><th>Year</th></tr>
+        </table>
+    </div>
+</body>
+</html>
